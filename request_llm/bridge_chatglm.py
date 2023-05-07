@@ -40,12 +40,16 @@ class GetGLMHandle(Process):
         while True:
             try:
                 if self.chatglm_model is None:
-                    self.chatglm_tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True)
+                    mode_path, = get_conf('LOCAL_GLM_MODEL_PATH')
+                    if mode_path == None:
+                        mode_path = "THUDM/chatglm-6b"
+
+                    self.chatglm_tokenizer = AutoTokenizer.from_pretrained(mode_path, trust_remote_code=True)
                     device, = get_conf('LOCAL_MODEL_DEVICE')
                     if device=='cpu':
-                        self.chatglm_model = AutoModel.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True).float()
+                        self.chatglm_model = AutoModel.from_pretrained(mode_path, trust_remote_code=True).float()
                     else:
-                        self.chatglm_model = AutoModel.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True).half().cuda()
+                        self.chatglm_model = AutoModel.from_pretrained(mode_path, trust_remote_code=True).half().cuda()
                     self.chatglm_model = self.chatglm_model.eval()
                     break
                 else:
